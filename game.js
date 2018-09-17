@@ -1,5 +1,3 @@
-var diff = require('deep-diff').diff;
-
 var gameConfig = {
   type: Phaser.AUTO, 
   width: 800,
@@ -206,6 +204,9 @@ var menuMusic;
 
       function update(){
         
+        if(player.isDead){
+        }       
+ 
         currentTime = new Date();        
 
 	function collectStar(player,breadCrumb){
@@ -240,7 +241,8 @@ var menuMusic;
               player.setVelocityX(0);
               player.setVelocityY(0);
               player.anims.stop();
-              game.hasFocus = false;
+              game.events.emit('blur');
+              game.events.removeAllListeners();
             }
           }
         }
@@ -250,16 +252,6 @@ var menuMusic;
 
         function spawnBreadCrumbHand(this_game){
           
-          if(!old_game){
-            old_game = game;
-          } 
-
-          var differences = diff(game,old_game);
-
-          console.log(differences);
-
-          old_game = game;
-
           var breadCrumbHand;
 
           var breadCrumbHandX;
