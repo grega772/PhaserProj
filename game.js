@@ -1,3 +1,5 @@
+var diff = require('deep-diff').diff;
+
 var gameConfig = {
   type: Phaser.AUTO, 
   width: 800,
@@ -30,6 +32,7 @@ var menuConfig = {
 
 var game = new Phaser.Game(menuConfig);
 
+var old_game;
 var cursors;
 var score = 0;
 var scoreText = '';
@@ -56,20 +59,37 @@ var breadCrumbWorth = 10;
 var scoreMoved = false;
 var drawBreadCrumbScore = false;
 var nextUpdateTime = new Date();
+var menuMusic;
 
         function menuPreload(){
           this.load.image('background','./assets/menu.png');
+          this.load.audio('menuTheme','./assets/dies_irae_short.ogg');  
         }
 
         function menuCreate(){
           var backgroundImage = this.add.image(0,0,'background').setOrigin(0,0).setScale(0.67);
-          var gameStart = this.add.text(600,300,'Start Game',{fontSize: '32px',fill:'#FFF', fontWeight: '700',backgroundColor: '#000'}).setInteractive();
-          gameStart.on('pointerover',function(){gameStart.setStyle({fontSize: '32px',fill:'#F00', fontWeight: '700',backgroundColor: '#000'})});
-          gameStart.on('pointerout',function(){gameStart.setStyle({fontSize: '32px',fill:'#FFF', fontWeight: '700',backgroundColor: '#000'})});
+          var gameStart = this.add.text(600,300,'Start Game',{fontSize: '32px',fill:'#FFF',
+            fontFamily: 'lobster', fontWeight: '700'}).setInteractive();
+          menuMusic = this.sound.add('menuTheme');
+          gameStart.on('pointerover',function(){gameStart.setStyle({fontSize: '32px',fontFamily: 'lobster', fill:'#F00', fontWeight: '700'})});
+          gameStart.on('pointerout',function(){gameStart.setStyle({fontSize: '32px',fill:'#FFF',fontFamily: 'lobster', fontWeight: '700'})});
           gameStart.on('pointerdown',function(){game.destroy(true);game = new Phaser.Game(gameConfig);});
+          menuMusic.play();
         }
 
         function menuUpdate(){
+          if(menuMusic.seek > 26){
+            if(menuMusic.seek < 27){
+              menuMusic.volume = 0.75;
+            }
+            else if(menuMusic.seek < 28){
+              menuMusic.volume = 0.5;
+            }
+            else{
+              menuMusic.volume = 0.25;
+            }
+          }
+          
         }
 
         function preload(){
@@ -181,10 +201,11 @@ var nextUpdateTime = new Date();
 	  cursors = this.input.keyboard.createCursorKeys();
 	  feather = this.add.image(220,10,'feather').setOrigin(0,0).setScale(0.5);		
 	  spawnTime = new Date();
+          console.log(game);
 	}
 
       function update(){
-
+        
         currentTime = new Date();        
 
 	function collectStar(player,breadCrumb){
@@ -213,6 +234,14 @@ var nextUpdateTime = new Date();
             this.add.sprite(bomb.x,bomb.y,'explosion').setFrame(0)
             .play('explode')
             bomb.disableBody(true,true);
+            if(!player.isDead){
+              player.isDead = true;
+              game.loop._target = 5;
+              player.setVelocityX(0);
+              player.setVelocityY(0);
+              player.anims.stop();
+              game.hasFocus = false;
+            }
           }
         }
 
@@ -220,7 +249,17 @@ var nextUpdateTime = new Date();
 	}
 
         function spawnBreadCrumbHand(this_game){
-        
+          
+          if(!old_game){
+            old_game = game;
+          } 
+
+          var differences = diff(game,old_game);
+
+          console.log(differences);
+
+          old_game = game;
+
           var breadCrumbHand;
 
           var breadCrumbHandX;
@@ -425,8 +464,11 @@ var nextUpdateTime = new Date();
           nextSpawnTime = new Date();
           nextSpawnTime.setSeconds(nextSpawnTime.getSeconds() + spawnSpeed);
           
-          if(spawnSpeed > 1.5){
+          if(spawnSpeed > 1.5 && !player.isDead){
             spawnSpeed -= 0.5;        
+          }
+          else if(player.isDead){
+            spawnSpeed = 10;
           }
 	}
 
@@ -440,7 +482,7 @@ var nextUpdateTime = new Date();
 	    });
           }
 	}
-
+      if(!player.isDead){
 
         if(!this.tweens.isTweening(player)){ 
 	  if(cursors.left.isDown){
@@ -546,6 +588,7 @@ var nextUpdateTime = new Date();
 	  if(!canDash){
 	    dashTimer = new Date();
 	  }
+        }
 	  if(!featherFading&&!canDash && !this.tweens.isTweening(feather)){
             feather.alpha = 0;
 	    featherFading = true;
