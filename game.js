@@ -205,12 +205,13 @@ var menuMusic;
       function update(){
         
         if(player.isDead){
+          //player.setTintFill('');
         }       
  
         currentTime = new Date();        
 
 	function collectStar(player,breadCrumb){
-          if(!this.tweens.isTweening(player)){
+          if(!this.tweens.isTweening(player) && !player.isDead){
             breadCrumb.disableBody(true,true);
             score += breadCrumbWorth;
             breadCrumbWorth += 10;
@@ -234,17 +235,36 @@ var menuMusic;
           if(!this.tweens.isTweening(player)){
             this.add.sprite(bomb.x,bomb.y,'explosion').setFrame(0)
             .play('explode')
+            var hitDirection = bomb.body.touching;
             bomb.disableBody(true,true);
+            blowPlayerAway(hitDirection);
             if(!player.isDead){
               player.isDead = true;
-              game.loop._target = 5;
-              player.setVelocityX(0);
-              player.setVelocityY(0);
+              game.loop._target = 2;
               player.anims.stop();
               game.events.emit('blur');
               game.events.removeAllListeners();
+              player.setCollideWorldBounds(false);
             }
           }
+        }
+
+        function blowPlayerAway(hitDirection){
+          console.log(hitDirection);
+          if(hitDirection.down){
+            player.setVelocityY(-300);
+          }
+          else if(hitDirection.up){
+            player.setVelocityY(300);
+          }
+
+          if(hitDirection.left){
+            player.setVelocityX(300);
+          }
+          else if(hitDirection.right){
+            player.setVelocityX(-300);
+          }
+          player.setAngularVelocity(100); 
         }
 
 	function collisionCallback(obj1,obj2){
@@ -587,7 +607,7 @@ var menuMusic;
             var featherFade = this.tweens.add({
               targets: [feather],
               alpha: 1,
-              duration: 4000,
+              duration: 1000,
               callbackScope: this,
               onComplete: function(){
                 var featherWobble = this.tweens.add({
