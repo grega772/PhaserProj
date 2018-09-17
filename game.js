@@ -1,4 +1,4 @@
-var config = {
+var gameConfig = {
   type: Phaser.AUTO, 
   width: 800,
   height: 600,
@@ -16,7 +16,20 @@ var config = {
   }
 }
 
-var game = new Phaser.Game(config);
+var menuConfig = {
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  scene: {
+    preload: menuPreload,
+    create: menuCreate,
+    update: menuUpdate
+  }
+}
+
+
+var game = new Phaser.Game(menuConfig);
+
 var cursors;
 var score = 0;
 var scoreText = '';
@@ -43,6 +56,21 @@ var breadCrumbWorth = 10;
 var scoreMoved = false;
 var drawBreadCrumbScore = false;
 var nextUpdateTime = new Date();
+
+        function menuPreload(){
+          this.load.image('background','./assets/menu.png');
+        }
+
+        function menuCreate(){
+          var backgroundImage = this.add.image(0,0,'background').setOrigin(0,0).setScale(0.67);
+          var gameStart = this.add.text(600,300,'Start Game',{fontSize: '32px',fill:'#FFF', fontWeight: '700',backgroundColor: '#000'}).setInteractive();
+          gameStart.on('pointerover',function(){gameStart.setStyle({fontSize: '32px',fill:'#F00', fontWeight: '700',backgroundColor: '#000'})});
+          gameStart.on('pointerout',function(){gameStart.setStyle({fontSize: '32px',fill:'#FFF', fontWeight: '700',backgroundColor: '#000'})});
+          gameStart.on('pointerdown',function(){game.destroy(true);game = new Phaser.Game(gameConfig);});
+        }
+
+        function menuUpdate(){
+        }
 
         function preload(){
 	  this.load.spritesheet('pigeon','./assets/pigeonsheet_new.png',
