@@ -63,10 +63,15 @@ var mad_world_music;
 var mad_world_music_finished = false;
 var gameOverMockingMessage;
 var finalScore;
+var handCollectionObject;
 
         function explosionSound(){
           var explosion = new Audio('./assets/explosion.ogg');
           explosion.play();
+        }
+         
+        function getRandomInt(min, max) {
+         return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
         function playSadMusic(){
@@ -130,6 +135,10 @@ var finalScore;
           this.load.spritesheet('bomb','./assets/bomb1.png',{frameWidth: 65, frameHeight: 71});
           this.load.spritesheet('explosion','./assets/exp1.png',{frameWidth: 173, frameHeight: 189});
           this.load.image('black_box','./assets/black_box.png');
+          this.load.spritesheet('tentacle_hand','./assets/tentaclegive1.png',{frameWidth:300,frameHeight:218});
+          this.load.spritesheet('hoof_hand','./assets/hoofgive1.png',{frameWidth:300,frameHeight:168});
+          this.load.spritesheet('santa_hand','./assets/santagive1.png',{frameWidth:300,frameHeight:201});
+          this.load.spritesheet('robot_hand','./assets/robotgive1.png',{frameWidth:300,frameHeight:263});
 	}
 
         function create(){
@@ -139,6 +148,41 @@ var finalScore;
 	    'icecream',
 	    'pizza',
 	  ];
+          
+          handCollectionObject = {
+            'human_hand': 'human_hand_open',
+            'tentacle_hand': 'tentacle_hand_open',
+            'hoof_hand': 'hoof_hand_open',
+            'santa_hand': 'santa_hand_open',
+            'robot_hand': 'robot_hand_open',
+          } 
+
+          this.anims.create({
+            key: 'hoof_hand_open',
+            frames: this.anims.generateFrameNumbers('hoof_hand',{start: 0, end: 2}),
+            frameRate: 10,
+            yoyo: true,
+          });
+          this.anims.create({
+            key: 'santa_hand_open',
+            frames: this.anims.generateFrameNumbers('santa_hand',{start: 0, end: 2}),
+            frameRate: 10,
+            yoyo: true,
+          });
+
+          this.anims.create({
+            key: 'robot_hand_open',
+            frames: this.anims.generateFrameNumbers('robot_hand',{start: 0, end: 2}),
+            frameRate: 10,
+            yoyo: true,
+          });
+          
+          this.anims.create({
+            key: 'tentacle_hand_open',
+            frames: this.anims.generateFrameNumbers('tentacle_hand',{start: 0, end: 2}),
+            frameRate: 10,
+            yoyo: true,
+          });
        
           this.anims.create({
             key:'human_hand_open',
@@ -343,8 +387,14 @@ var finalScore;
               breadCrumbHandY = 70
             }
         }
+        
+        var keys = Object.keys(handCollectionObject);
 
-        breadCrumbHand = this_game.add.sprite(breadCrumbHandX,breadCrumbHandY,'human_hand');
+        var randInt = getRandomInt(0,keys.length -1 ); 
+       
+        var randHand = keys[randInt]; 
+
+        breadCrumbHand = this_game.add.sprite(breadCrumbHandX,breadCrumbHandY,randHand);
 
         if(breadCrumbHandAngle < 0.3){
             breadCrumbHand.scaleY = 1;
@@ -354,7 +404,7 @@ var finalScore;
               x: breadCrumbHand.x - 150,
               duration: 700,
               onComplete: function(){
-                breadCrumbHand.anims.play('human_hand_open');
+                breadCrumbHand.anims.play(handCollectionObject[randHand]);
                 spawnBreadcrumbs(breadCrumbHand.x-100,breadCrumbHand.y+60,this)
               },
               callbackScope:this_game
@@ -380,7 +430,7 @@ var finalScore;
               x: breadCrumbHand.x,
               duration: 700,
               onComplete: function(){
-                breadCrumbHand.anims.play('human_hand_open');
+                breadCrumbHand.anims.play(handCollectionObject[randHand]);
                 spawnBreadcrumbs(breadCrumbHand.x+50,breadCrumbHand.y+100,this)
               },
               callbackScope:this_game
@@ -407,7 +457,7 @@ var finalScore;
               x: breadCrumbHand.x + 150,
               duration: 700,
               onComplete: function(){
-                breadCrumbHand.anims.play('human_hand_open');
+                breadCrumbHand.anims.play(handCollectionObject[randHand]);
                 spawnBreadcrumbs(breadCrumbHand.x+100,breadCrumbHand.y+80,this)
               },
               callbackScope:this_game
