@@ -61,6 +61,8 @@ var menuMusic;
 var black_box;
 var mad_world_music;
 var mad_world_music_finished = false;
+var gameOverMockingMessage;
+var finalScore;
 
         function explosionSound(){
           var explosion = new Audio('./assets/explosion.ogg');
@@ -88,7 +90,6 @@ var mad_world_music_finished = false;
         function fadeout(music,volumeDecrement) {
           setTimeout(function(music, volumeDecrement){
             music.volume -= volumeDecrement;
-            console.log(music.volume);
             recurseControl(music); 
           },1000,music, volumeDecrement ) 
         }
@@ -111,7 +112,6 @@ var mad_world_music_finished = false;
 
         function menuUpdate(){
           if(menuMusic.seek > 20 && menuMusic.volume > 0.01){
-            console.log(menuMusic.volume);
             var newVolume = menuMusic.volume -= 0.002;
             menuMusic.setVolume(newVolume);
           }
@@ -227,20 +227,25 @@ var mad_world_music_finished = false;
 	  feather = this.add.image(220,10,'feather').setOrigin(0,0).setScale(0.5);		
 	  spawnTime = new Date();
           black_box = this.add.image(0,0,'black_box').setOrigin(0,0).setAlpha(0).setDepth(100);
-          
+          gameOverMockingMessage = this.add.text(300,300,'git gud',{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(101);
+          finalScore = this.add.text(500,300,'Final Score: ' + score,{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102);  
 	}
 
       function update(){
         
         if(player.isDead){
-          if(black_box.alpha <= 1){
+          if(black_box.alpha < 1){
             black_box.alpha += 0.001
+          }
+          else if(gameOverMockingMessage.alpha < 1){
+            gameOverMockingMessage.alpha += 0.01;
+            finalScore.alpa += 0.01;
           }
           
         }       
  
         currentTime = new Date();        
-
+        
 	function collectStar(player,breadCrumb){
           if(!this.tweens.isTweening(player) && !player.isDead){
             breadCrumb.disableBody(true,true);
@@ -269,7 +274,6 @@ var mad_world_music_finished = false;
             var hitDirection = bomb.body.touching;
             bomb.disableBody(true,true);
             blowPlayerAway(hitDirection);
-            fadeOut();
             if(!player.isDead){
               player.isDead = true;
               game.loop._target = 2;
@@ -282,9 +286,6 @@ var mad_world_music_finished = false;
               playSadMusic();
             }
           }
-        }
-
-        function fadeOut(){
         }
 
         function blowPlayerAway(hitDirection){
