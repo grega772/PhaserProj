@@ -58,6 +58,8 @@ var scoreMoved = false;
 var drawBreadCrumbScore = false;
 var nextUpdateTime = new Date();
 var menuMusic;
+var grayImage;
+
 
         function menuPreload(){
           this.load.image('background','./assets/menu.png');
@@ -238,33 +240,38 @@ var menuMusic;
             var hitDirection = bomb.body.touching;
             bomb.disableBody(true,true);
             blowPlayerAway(hitDirection);
+            fadeOut();
             if(!player.isDead){
               player.isDead = true;
               game.loop._target = 2;
               player.anims.stop();
               game.events.emit('blur');
               game.events.removeAllListeners();
-              player.setCollideWorldBounds(false);
+              player.setBounceY(1);
+              player.setBounceX(1);
             }
           }
+        }
+
+        function fadeOut(){
         }
 
         function blowPlayerAway(hitDirection){
           console.log(hitDirection);
           if(hitDirection.down){
-            player.setVelocityY(-300);
+            player.setVelocityY(-400);
           }
           else if(hitDirection.up){
-            player.setVelocityY(300);
+            player.setVelocityY(400);
           }
 
           if(hitDirection.left){
-            player.setVelocityX(300);
+            player.setVelocityX(400);
           }
           else if(hitDirection.right){
-            player.setVelocityX(-300);
+            player.setVelocityX(-400);
           }
-          player.setAngularVelocity(100); 
+          player.setAngularVelocity(300); 
         }
 
 	function collisionCallback(obj1,obj2){
