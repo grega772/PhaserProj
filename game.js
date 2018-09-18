@@ -64,10 +64,17 @@ var mad_world_music_finished = false;
 var gameOverMockingMessage;
 var finalScore;
 var handCollectionObject;
+var backToMenu;
+var replay;
+var sadMusic;
 
         function explosionSound(){
           var explosion = new Audio('./assets/explosion.ogg');
           explosion.play();
+        }
+
+        function stopSadMusic(){
+          jQuery('#mad_world_audio')[0].volume = 0;
         }
          
         function getRandomInt(min, max) {
@@ -76,6 +83,7 @@ var handCollectionObject;
 
         function playSadMusic(){
           var sadMusic = jQuery('#mad_world_audio')[0];
+          sadMusic.volume = 1;
           jQuery("audio").on("ended", function(){mad_world_music_finished = true;});
           setTimeout(function(sadMusic){
             sadMusic.play();
@@ -272,6 +280,8 @@ var handCollectionObject;
           black_box = this.add.image(0,0,'black_box').setOrigin(0,0).setAlpha(0).setDepth(100);
           gameOverMockingMessage = this.add.text(300,300,'git gud',{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(101);
           finalScore = this.add.text(250,200,'',{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102);  
+          backToMenu = this.add.text(300,400,'Menu',{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102).setInteractive();
+          replay = this.add.text(300,450,'Replay',{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102).setInteractive();
 	}
 
       function update(){
@@ -279,13 +289,25 @@ var handCollectionObject;
         if(player.isDead){
           if(black_box.alpha < 1){
             black_box.alpha += 0.001
+            game.events.emit('blur');
           }
           else if(gameOverMockingMessage.alpha < 1){
             if(finalScore.text === ''){
               finalScore.setText("Your Score: " + score);
+              game.events.emit('focus');           
+              replay.on('pointerover',function(){replay.setStyle({fontSize: '32px', fill:'#F00', fontWeight: '700'})});
+              replay.on('pointerout',function(){replay.setStyle({fontSize: '32px',fill:'#FFF', fontWeight: '700'})});
+              replay.on('pointerdown',function(){stopSadMusic(); game.destroy(true);game = new Phaser.Game(gameConfig);});
+
+              backToMenu.on('pointerover',function(){backToMenu.setStyle({fontSize: '32px', fill:'#F00', fontWeight: '700'})});
+              backToMenu.on('pointerout',function(){backToMenu.setStyle({fontSize: '32px',fill:'#FFF', fontWeight: '700'})});
+              backToMenu.on('pointerdown',function(){stopSadMusic(); game.destroy(true);game = new Phaser.Game(menuConfig);});
+
             }
             gameOverMockingMessage.alpha += 0.01;
             finalScore.alpha += 0.01;
+            replay.alpha += 0.01;
+            backToMenu.alpha += 0.01;
           }
           
         }       
@@ -325,7 +347,9 @@ var handCollectionObject;
               game.loop._target = 2;
               player.anims.stop();
               game.events.emit('blur');
-              game.events.removeAllListeners();
+              game.events.emit('game_finished');
+              game.events.removeAllListeners('keyup');
+              game.events.removeAllListeners('keypress');
               player.setBounceY(1);
               player.setBounceX(1);
               explosionSound();
@@ -336,19 +360,19 @@ var handCollectionObject;
 
         function blowPlayerAway(hitDirection){
           if(hitDirection.down){
-            player.setVelocityY(-400);
+            player.setVelocityY(-200);
           }
           else if(hitDirection.up){
-            player.setVelocityY(400);
+            player.setVelocityY(200);
           }
 
           if(hitDirection.left){
-            player.setVelocityX(400);
+            player.setVelocityX(-200);
           }
           else if(hitDirection.right){
-            player.setVelocityX(-400);
+            player.setVelocityX(200);
           }
-          player.setAngularVelocity(300); 
+          player.setAngularVelocity(900); 
         }
 
 	function collisionCallback(obj1,obj2){
