@@ -60,12 +60,37 @@ var nextUpdateTime = new Date();
 var menuMusic;
 var black_box;
 var mad_world_music;
+var mad_world_music_finished = false;
 
-
+        function explosionSound(){
+          var explosion = new Audio('./assets/explosion.ogg');
+          explosion.play(); 
+        }
 
         function playSadMusic(){
-          var audio = new Audio('./assets/mad_world.ogg');
-          audio.play(); 
+          var sadMusic = jQuery('#mad_world_audio')[0];
+          sadMusic.play();
+          jQuery("audio").on("ended", function(){mad_world_music_finished = true;});
+          recurseControl(sadMusic);
+        }
+        
+        function recurseControl(music){
+          if(!mad_world_music_finished){
+            if(music.volume > 0.25){
+              fadeout(music,0.025);
+            }
+            else if(music.volume > 0.01){
+              fadeout(music,0.01);
+            }
+          }
+        }
+
+        function fadeout(music,volumeDecrement) {
+          setTimeout(function(music, volumeDecrement){
+            music.volume -= volumeDecrement;
+            console.log(music.volume);
+            recurseControl(music); 
+          },1000,music, volumeDecrement ) 
         }
 
         function menuPreload(){
@@ -85,18 +110,11 @@ var mad_world_music;
         }
 
         function menuUpdate(){
-          if(menuMusic.seek > 26){
-            if(menuMusic.seek < 27){
-              menuMusic.volume = 0.75;
-            }
-            else if(menuMusic.seek < 28){
-              menuMusic.volume = 0.5;
-            }
-            else{
-              menuMusic.volume = 0.25;
-            }
+          if(menuMusic.seek > 20 && menuMusic.volume > 0.01){
+            console.log(menuMusic.volume);
+            var newVolume = menuMusic.volume -= 0.002;
+            menuMusic.setVolume(newVolume);
           }
-          
         }
 
         function preload(){
@@ -260,6 +278,7 @@ var mad_world_music;
               game.events.removeAllListeners();
               player.setBounceY(1);
               player.setBounceX(1);
+              explosionSound();
               playSadMusic();
             }
           }
