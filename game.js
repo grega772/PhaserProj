@@ -59,7 +59,14 @@ var drawBreadCrumbScore = false;
 var nextUpdateTime = new Date();
 var menuMusic;
 var black_box;
+var mad_world_music;
 
+
+
+        function playSadMusic(){
+          var audio = new Audio('./assets/mad_world.ogg');
+          audio.play(); 
+        }
 
         function menuPreload(){
           this.load.image('background','./assets/menu.png');
@@ -130,7 +137,6 @@ var black_box;
 	    repeat: -1,
 	    duration: 300,
 	  });
-
 	
 	  this.anims.create({
 	    key: 'left',
@@ -203,6 +209,7 @@ var black_box;
 	  feather = this.add.image(220,10,'feather').setOrigin(0,0).setScale(0.5);		
 	  spawnTime = new Date();
           black_box = this.add.image(0,0,'black_box').setOrigin(0,0).setAlpha(0).setDepth(100);
+          
 	}
 
       function update(){
@@ -211,6 +218,7 @@ var black_box;
           if(black_box.alpha <= 1){
             black_box.alpha += 0.001
           }
+          
         }       
  
         currentTime = new Date();        
@@ -252,6 +260,7 @@ var black_box;
               game.events.removeAllListeners();
               player.setBounceY(1);
               player.setBounceX(1);
+              playSadMusic();
             }
           }
         }
@@ -260,7 +269,6 @@ var black_box;
         }
 
         function blowPlayerAway(hitDirection){
-          console.log(hitDirection);
           if(hitDirection.down){
             player.setVelocityY(-400);
           }
