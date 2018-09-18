@@ -58,7 +58,7 @@ var scoreMoved = false;
 var drawBreadCrumbScore = false;
 var nextUpdateTime = new Date();
 var menuMusic;
-var grayImage;
+var black_box;
 
 
         function menuPreload(){
@@ -105,6 +105,7 @@ var grayImage;
 	  this.load.spritesheet('human_hand','./assets/handgive.png',{frameWidth:300,frameHeight:241});
           this.load.spritesheet('bomb','./assets/bomb1.png',{frameWidth: 65, frameHeight: 71});
           this.load.spritesheet('explosion','./assets/exp1.png',{frameWidth: 173, frameHeight: 189});
+          this.load.image('black_box','./assets/black_box.png');
 	}
 
         function create(){
@@ -201,13 +202,15 @@ var grayImage;
 	  cursors = this.input.keyboard.createCursorKeys();
 	  feather = this.add.image(220,10,'feather').setOrigin(0,0).setScale(0.5);		
 	  spawnTime = new Date();
-          console.log(game);
+          black_box = this.add.image(0,0,'black_box').setOrigin(0,0).setAlpha(0).setDepth(100);
 	}
 
       function update(){
         
         if(player.isDead){
-          //player.setTintFill('');
+          if(black_box.alpha <= 1){
+            black_box.alpha += 0.001
+          }
         }       
  
         currentTime = new Date();        
