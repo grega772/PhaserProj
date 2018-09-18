@@ -66,24 +66,23 @@ var finalScore;
 
         function explosionSound(){
           var explosion = new Audio('./assets/explosion.ogg');
-          explosion.play(); 
+          explosion.play();
         }
 
         function playSadMusic(){
           var sadMusic = jQuery('#mad_world_audio')[0];
-          sadMusic.play();
           jQuery("audio").on("ended", function(){mad_world_music_finished = true;});
-          recurseControl(sadMusic);
+          setTimeout(function(sadMusic){
+            sadMusic.play();
+            recurseControl(sadMusic); 
+          },200,sadMusic);
         }
         
         function recurseControl(music){
           if(!mad_world_music_finished){
-            if(music.volume > 0.25){
-              fadeout(music,0.025);
-            }
-            else if(music.volume > 0.01){
-              fadeout(music,0.01);
-            }
+              if(music.volume >= 0.001){
+                fadeout(music,0.001);
+              }
           }
         }
 
@@ -91,7 +90,7 @@ var finalScore;
           setTimeout(function(music, volumeDecrement){
             music.volume -= volumeDecrement;
             recurseControl(music); 
-          },1000,music, volumeDecrement ) 
+          },50,music, volumeDecrement ) 
         }
 
         function menuPreload(){
@@ -111,8 +110,8 @@ var finalScore;
         }
 
         function menuUpdate(){
-          if(menuMusic.seek > 20 && menuMusic.volume > 0.01){
-            var newVolume = menuMusic.volume -= 0.002;
+          if(menuMusic.seek > 14 && menuMusic.volume > 0){
+            var newVolume = menuMusic.volume -= 0.001;
             menuMusic.setVolume(newVolume);
           }
         }
@@ -228,7 +227,7 @@ var finalScore;
 	  spawnTime = new Date();
           black_box = this.add.image(0,0,'black_box').setOrigin(0,0).setAlpha(0).setDepth(100);
           gameOverMockingMessage = this.add.text(300,300,'git gud',{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(101);
-          finalScore = this.add.text(500,300,'Final Score: ' + score,{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102);  
+          finalScore = this.add.text(250,200,'',{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102);  
 	}
 
       function update(){
@@ -238,8 +237,11 @@ var finalScore;
             black_box.alpha += 0.001
           }
           else if(gameOverMockingMessage.alpha < 1){
+            if(finalScore.text === ''){
+              finalScore.setText("Your Score: " + score);
+            }
             gameOverMockingMessage.alpha += 0.01;
-            finalScore.alpa += 0.01;
+            finalScore.alpha += 0.01;
           }
           
         }       
