@@ -162,6 +162,7 @@ var biteTwo;
           this.load.audio('bite_two','./assets/bite2.ogg');
           this.load.audio('bomb_bounce','./assets/bombbounce.ogg');
           this.load.audio('food_bounce','./assets/foodbounce.ogg');
+          this.load.spritesheet('pigeon_hand','./assets/pigeongive1.png',{frameWidth: 300, frameHeight: 156});
 	}
 
         function create(){
@@ -174,11 +175,18 @@ var biteTwo;
           
           handCollectionObject = {
             'human_hand': 'human_hand_open',
-            'tentacle_hand': 'tentacle_hand_open',
+            'pigeon_hand': 'pigeon_hand_open',
             'hoof_hand': 'hoof_hand_open',
             'santa_hand': 'santa_hand_open',
             'robot_hand': 'robot_hand_open',
           } 
+          
+          this.anims.create({
+            key: 'pigeon_hand_open',
+            frames: this.anims.generateFrameNumbers('pigeon_hand',{start: 0, end: 2}),
+            frameRate: 10,
+            yoyo: true,
+          });
 
           this.anims.create({
             key: 'hoof_hand_open',
