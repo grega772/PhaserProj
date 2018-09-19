@@ -616,19 +616,33 @@ var biteTwo;
        
 	
 	function processCallback(obj1,obj2){
-	  if(obj1.collisionCount){
-            if(obj1.collisionCount > 1){
-              return false;
+          if(!player.isDead){
+	    if(obj1.collisionCount){
+              if(obj1.collisionCount > 1){
+                return false;
+              }
+              else{
+                if(obj1.texture.key === "food"){
+                  foodBounce.play();
+                }
+                else{
+                  bombBounce.play();
+                }
+                obj1.collisionCount += 1;
+              } 
             }
             else{
-              obj1.collisionCount += 1;
-            } 
-          }
-          else{
-	    obj1.collisionCount = 1;
-	    return true;
-          }
-	}
+              if(obj1.texture.key === "food"){
+                foodBounce.play();
+              }
+              else{
+                bombBounce.play();
+              }
+	      obj1.collisionCount = 1;
+	      return true;
+            }
+	  }
+        }
 
 	if(!canDash){
 	  if(currentTime - dashTimer > 1000){
