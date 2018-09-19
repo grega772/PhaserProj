@@ -78,7 +78,7 @@ var gameStart;
         }
 
         function stopSadMusic(){
-          jQuery('#mad_world_audio')[0].volume = 0;
+          jQuery('#mad_world_audio')[0].volume = 0.002;
         }
          
         function getRandomInt(min, max) {
@@ -99,7 +99,7 @@ var gameStart;
         function recurseControl(music){
           if(!mad_world_music_finished){
               if(music.volume >= 0.001){
-                fadeout(music,0.001);
+                fadeout(music,0.002);
               }
           }
         }
@@ -281,11 +281,11 @@ var gameStart;
 	  player.setCollideWorldBounds(true);
 	  this.physics.add.collider(player,platforms);
 	  cursors = this.input.keyboard.createCursorKeys();
-	  feather = this.add.image(220,10,'feather').setOrigin(0,0).setScale(0.5);		
+	  feather = this.add.image(220,10,'feather').setOrigin(0,0).setScale(0.1);		
 	  spawnTime = new Date();
           black_box = this.add.image(0,0,'black_box').setOrigin(0,0).setAlpha(0).setDepth(100);
           survivalTime = this.add.text(250,250,'',{fontSize: '24px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(101); 
-          gameOverMockingMessage = this.add.text(250,300,'Verdict: git gud',{fontSize: '24px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(101);
+          gameOverMockingMessage = this.add.text((scoreText.width+30),300,'Verdict: git gud',{fontSize: '24px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(101);
           finalScore = this.add.text(250,200,'',{fontSize: '24px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102);  
           backToMenu = this.add.text(300,400,'Menu',{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102).setInteractive();
           replay = this.add.text(300,450,'Replay',{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102).setInteractive();
@@ -333,7 +333,7 @@ var gameStart;
             breadCrumbWorth += 10;
             scoreText.setText('Score: ' + score);
             feather.x = scoreText.width + 30;
-            gobbleBreadcrumbs(player.x,player.y-40,this);
+            gobbleBreadcrumbs(player.x,player.y-10,this);
             var breadCrumbScore =  this.add.text(breadCrumb.x,breadCrumb.y,breadCrumbWorth-10,{fontSize: '16px',fill:'#000'});
             this.tweens.add({
               targets: [breadCrumbScore],
@@ -358,7 +358,7 @@ var gameStart;
             explosionSound();
             if(!player.isDead){
               player.isDead = true;
-              game.loop._target = 2;
+              game.loop._target = 3;
               player.anims.stop();
               game.events.emit('blur');
               game.events.emit('game_finished');
@@ -374,19 +374,19 @@ var gameStart;
 
         function blowPlayerAway(hitDirection){
           if(hitDirection.down){
-            player.setVelocityY(-200);
+            player.setVelocityY(-900);
           }
           else if(hitDirection.up){
-            player.setVelocityY(200);
+            player.setVelocityY(900);
           }
 
           if(hitDirection.left){
-            player.setVelocityX(-200);
+            player.setVelocityX(-900);
           }
           else if(hitDirection.right){
-            player.setVelocityX(200);
+            player.setVelocityX(900);
           }
-          player.setAngularVelocity(900); 
+          player.setAngularVelocity(1200); 
         }
 
 	function collisionCallback(obj1,obj2){
