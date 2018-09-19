@@ -69,6 +69,8 @@ var sadMusic;
 var dashTween;
 var animChanged = true;
 var breadcrumbGiblets = [];
+var gameEnd;
+var gameStart;
 
         function explosionSound(){
           var explosion = new Audio('./assets/explosion.ogg');
@@ -85,6 +87,7 @@ var breadcrumbGiblets = [];
 
         function playSadMusic(){
           var sadMusic = jQuery('#mad_world_audio')[0];
+          sadMusic.currentTime = 0.3;
           sadMusic.volume = 1;
           jQuery("audio").on("ended", function(){mad_world_music_finished = true;});
           setTimeout(function(sadMusic){
@@ -281,10 +284,12 @@ var breadcrumbGiblets = [];
 	  feather = this.add.image(220,10,'feather').setOrigin(0,0).setScale(0.5);		
 	  spawnTime = new Date();
           black_box = this.add.image(0,0,'black_box').setOrigin(0,0).setAlpha(0).setDepth(100);
-          gameOverMockingMessage = this.add.text(300,300,'git gud',{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(101);
-          finalScore = this.add.text(250,200,'',{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102);  
+          survivalTime = this.add.text(250,250,'',{fontSize: '24px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(101); 
+          gameOverMockingMessage = this.add.text(250,300,'Verdict: git gud',{fontSize: '24px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(101);
+          finalScore = this.add.text(250,200,'',{fontSize: '24px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102);  
           backToMenu = this.add.text(300,400,'Menu',{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102).setInteractive();
           replay = this.add.text(300,450,'Replay',{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102).setInteractive();
+          gameStart = new Date();
 	}
 
       function update(){
@@ -297,6 +302,9 @@ var breadcrumbGiblets = [];
           else if(gameOverMockingMessage.alpha < 1){
             if(finalScore.text === ''){
               finalScore.setText("Your Score: " + score);
+              var timeDiff = Math.abs(gameEnd.getTime() - gameStart.getTime());
+              var diffSeconds = Math.ceil(timeDiff / (1000)); 
+              survivalTime.setText("You survived for " + diffSeconds.toString() + " seconds");
               game.events.emit('focus');           
               replay.on('pointerover',function(){replay.setStyle({fontSize: '32px', fill:'#F00', fontWeight: '700'})});
               replay.on('pointerout',function(){replay.setStyle({fontSize: '32px',fill:'#FFF', fontWeight: '700'})});
@@ -311,6 +319,7 @@ var breadcrumbGiblets = [];
             finalScore.alpha += 0.01;
             replay.alpha += 0.01;
             backToMenu.alpha += 0.01;
+            survivalTime.alpha += 0.01;
           }
           
         }       
@@ -358,6 +367,7 @@ var breadcrumbGiblets = [];
               player.setBounceX(1);
               explosionSound();
               playSadMusic();
+              gameEnd = new Date();
             }
           }
         }
