@@ -71,6 +71,10 @@ var animChanged = true;
 var breadcrumbGiblets = [];
 var gameEnd;
 var gameStart;
+var bombBounce;
+var foodBounce;
+var biteOne;
+var biteTwo;
 
         function explosionSound(){
           var explosion = new Audio('./assets/explosion.ogg');
@@ -98,7 +102,7 @@ var gameStart;
         
         function recurseControl(music){
           if(!mad_world_music_finished){
-              if(music.volume >= 0.001){
+              if(music.volume >= 0.002){
                 fadeout(music,0.002);
               }
           }
@@ -121,7 +125,7 @@ var gameStart;
           var backgroundImage = this.add.image(0,0,'background').setOrigin(0,0).setScale(0.67);
           menuMusic = this.sound.add('menuTheme');
           menuMusic.play();
-          gameStart = this.add.image(650,400,'start_button').setInteractive().setScale(0.3);
+          gameStart = this.add.image(675,400,'start_button').setInteractive().setScale(0.3);
           gameStart.on('pointerdown',function(){game.destroy(true);game = new Phaser.Game(gameConfig);});
           gameStart.on('pointerover',function(){gameStart.setScale(0.35)});
           gameStart.on('pointerout',function(){gameStart.setScale(0.3)});
@@ -154,6 +158,10 @@ var gameStart;
           this.load.spritesheet('santa_hand','./assets/santagive1.png',{frameWidth:300,frameHeight:201});
           this.load.spritesheet('robot_hand','./assets/robotgive1.png',{frameWidth:300,frameHeight:263});
           this.load.spritesheet('breadcrumbs','./assets/breadcrumbs.png',{frameWidth:50,frameHeight:35});
+          this.load.audio('bite_one','./assets/bite1.ogg');
+          this.load.audio('bite_two','./assets/bite2.ogg');
+          this.load.audio('bomb_bounce','./assets/bombbounce.ogg');
+          this.load.audio('food_bounce','./assets/foodbounce.ogg');
 	}
 
         function create(){
@@ -282,15 +290,19 @@ var gameStart;
 	  player.setCollideWorldBounds(true);
 	  this.physics.add.collider(player,platforms);
 	  cursors = this.input.keyboard.createCursorKeys();
-	  feather = this.add.image(220,10,'feather').setOrigin(0,0).setScale(0.1);		
+	  feather = this.add.image((scoreText.width+50),10,'feather').setOrigin(0,0).setScale(0.2);		
 	  spawnTime = new Date();
           black_box = this.add.image(0,0,'black_box').setOrigin(0,0).setAlpha(0).setDepth(100);
           survivalTime = this.add.text(250,250,'',{fontSize: '24px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(101); 
-          gameOverMockingMessage = this.add.text((scoreText.width+30),300,'Verdict: git gud',{fontSize: '24px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(101);
+          gameOverMockingMessage = this.add.text(250,300,'Verdict: git gud',{fontSize: '24px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(101);
           finalScore = this.add.text(250,200,'',{fontSize: '24px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102);  
           backToMenu = this.add.text(300,400,'Menu',{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102).setInteractive();
           replay = this.add.text(300,450,'Replay',{fontSize: '32px',fill:'#FFF', fontWeight: '700'}).setAlpha(0).setDepth(102).setInteractive();
           gameStart = new Date();
+          biteOne = this.sound.add('bite_one');
+          biteTwo = this.sound.add('bite_two');
+          foodBounce = this.sound.add('food_bounce');
+          bombBounce = this.sound.add('bomb_bounce');
 	}
 
       function update(){
@@ -333,8 +345,9 @@ var gameStart;
             score += breadCrumbWorth;
             breadCrumbWorth += 10;
             scoreText.setText('Score: ' + score);
-            feather.x = scoreText.width + 30;
+            feather.x = scoreText.width + 50;
             gobbleBreadcrumbs(player.x,player.y-10,this);
+            playGobbleSound();
             var breadCrumbScore =  this.add.text(breadCrumb.x,breadCrumb.y,breadCrumbWorth-10,{fontSize: '16px',fill:'#000'});
             this.tweens.add({
               targets: [breadCrumbScore],
@@ -346,6 +359,16 @@ var gameStart;
               },
          });
              
+          }
+        }
+
+        function playGobbleSound(){
+          var chance = getRandomInt(0,1);
+          if(chance){ 
+            biteOne.play();
+          }
+          else{
+            biteTwo.play();
           }
         }
         
