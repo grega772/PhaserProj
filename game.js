@@ -333,7 +333,7 @@ var gameStart;
             breadCrumbWorth += 10;
             scoreText.setText('Score: ' + score);
             feather.x = scoreText.width + 30;
-            gobbleBreadcrumbs(player.x,player.y-60,this);
+            gobbleBreadcrumbs(player.x,player.y-40,this);
             var breadCrumbScore =  this.add.text(breadCrumb.x,breadCrumb.y,breadCrumbWorth-10,{fontSize: '16px',fill:'#000'});
             this.tweens.add({
               targets: [breadCrumbScore],
@@ -355,6 +355,7 @@ var gameStart;
             var hitDirection = bomb.body.touching;
             bomb.disableBody(true,true);
             blowPlayerAway(hitDirection);
+            explosionSound();
             if(!player.isDead){
               player.isDead = true;
               game.loop._target = 2;
@@ -365,7 +366,6 @@ var gameStart;
               game.events.removeAllListeners('keypress');
               player.setBounceY(1);
               player.setBounceX(1);
-              explosionSound();
               playSadMusic();
               gameEnd = new Date();
             }
