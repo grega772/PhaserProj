@@ -114,17 +114,18 @@ var gameStart;
         function menuPreload(){
           this.load.image('background','./assets/menu.png');
           this.load.audio('menuTheme','./assets/dies_irae_short.ogg');  
+          this.load.image('start_button','./assets/start.png');
         }
 
         function menuCreate(){
           var backgroundImage = this.add.image(0,0,'background').setOrigin(0,0).setScale(0.67);
-          var gameStart = this.add.text(600,300,'Start Game',{fontSize: '32px',fill:'#FFF',
-            fontFamily: 'lobster', fontWeight: '700'}).setInteractive();
           menuMusic = this.sound.add('menuTheme');
-          gameStart.on('pointerover',function(){gameStart.setStyle({fontSize: '32px',fontFamily: 'lobster', fill:'#F00', fontWeight: '700'})});
-          gameStart.on('pointerout',function(){gameStart.setStyle({fontSize: '32px',fill:'#FFF',fontFamily: 'lobster', fontWeight: '700'})});
-          gameStart.on('pointerdown',function(){game.destroy(true);game = new Phaser.Game(gameConfig);});
           menuMusic.play();
+          gameStart = this.add.image(650,400,'start_button').setInteractive().setScale(0.3);
+          gameStart.on('pointerdown',function(){game.destroy(true);game = new Phaser.Game(gameConfig);});
+          gameStart.on('pointerover',function(){gameStart.setScale(0.35)});
+          gameStart.on('pointerout',function(){gameStart.setScale(0.3)});
+
         }
 
         function menuUpdate(){
