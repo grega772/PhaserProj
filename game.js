@@ -68,6 +68,7 @@ var replay;
 var sadMusic;
 var dashTween;
 var animChanged = true;
+var breadcrumbGiblets = [];
 
         function explosionSound(){
           var explosion = new Audio('./assets/explosion.ogg');
@@ -148,6 +149,7 @@ var animChanged = true;
           this.load.spritesheet('hoof_hand','./assets/hoofgive1.png',{frameWidth:300,frameHeight:168});
           this.load.spritesheet('santa_hand','./assets/santagive1.png',{frameWidth:300,frameHeight:201});
           this.load.spritesheet('robot_hand','./assets/robotgive1.png',{frameWidth:300,frameHeight:263});
+          this.load.spritesheet('breadcrumbs','./assets/breadcrumbs.png',{frameWidth:50,frameHeight:35});
 	}
 
         function create(){
@@ -322,6 +324,7 @@ var animChanged = true;
             breadCrumbWorth += 10;
             scoreText.setText('Score: ' + score);
             feather.x = scoreText.width + 30;
+            gobbleBreadcrumbs(player.x,player.y-60,this);
             var breadCrumbScore =  this.add.text(breadCrumb.x,breadCrumb.y,breadCrumbWorth-10,{fontSize: '16px',fill:'#000'});
             this.tweens.add({
               targets: [breadCrumbScore],
@@ -534,6 +537,22 @@ var animChanged = true;
           if( (Math.random() / spawnSpeed) > 0.3){
             spawnBombs(x_coord,y_coord,this_game,parseInt(Phaser.Math.FloatBetween(1,4)));
           }
+        }
+
+        function gobbleBreadcrumbs(x_coord,y_coord,this_game){
+          breadcrumbGiblets.push(this_game.physics.add.group({
+            key:'breadcrumbs',
+            repeat: getRandomInt(1,3),
+            setXY: {x:x_coord, y:y_coord},
+          }));
+
+          breadcrumbGiblets[breadcrumbGiblets.length-1].children.iterate(function(child){
+            child.setFrame(Phaser.Math.Between(0,2));
+            child.setScale(0.3);
+            child.setVelocityX(Phaser.Math.FloatBetween(-100,100));
+            child.setVelocityY(Phaser.Math.FloatBetween(-200,0));
+            child.setAngularVelocity(Phaser.Math.FloatBetween(-50,50));
+          });
         }
 
         function spawnBombs(x_coord,y_coord,this_game,num_bombs){
