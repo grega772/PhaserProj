@@ -47,7 +47,6 @@ var nextSpawnTime = new Date();
 nextSpawnTime.setSeconds(nextSpawnTime.getSeconds() + 5);
 var enableCollider;
 var foodArray;
-var animationSwitched;
 var breadCrumbs;
 var breadCrumbIndex;
 var spawnSpeed = 5;
@@ -67,6 +66,8 @@ var handCollectionObject;
 var backToMenu;
 var replay;
 var sadMusic;
+var dashTween;
+var animChanged = true;
 
         function explosionSound(){
           var explosion = new Audio('./assets/explosion.ogg');
@@ -597,7 +598,7 @@ var sadMusic;
             spawnSpeed = 10;
           }
 	}
-
+/*
 	for(var i = 0; i< breadCrumbIndex; i++){
 	  if(breadCrumbs[i]!=null){
 	    breadCrumbs[i].children.iterate(function(breadCrumb){
@@ -608,6 +609,7 @@ var sadMusic;
 	    });
           }
 	}
+*/
       if(!player.isDead){
 
         if(!this.tweens.isTweening(player)){ 
@@ -641,80 +643,118 @@ var sadMusic;
 	   }
 	 }
 	}
-	else{
-	  //player is tweening
-          var tweens = this.tweens.getAllTweens();
-	  for(var i = 0;i<tweens.length;i++){
-	  if(tweens[i]!=null && tweens[i].duration === 4000 && !animationSwitched){
-	    if(tweens[i].elapsed>50){
-              player.anims.play('dash');
-              animationSwitched = true;
-	      }
-	    }
-          }
-	}
-
-	if(cursors.up.isDown && player.body.touching.down){
+        if(cursors.up.isDown && player.body.touching.down){
           player.anims.play('flap',true);
-	  player.setVelocityY(-530);
-	}
+          player.setVelocityY(-530);
+        }
+      
+        if(!animChanged && this.tweens.isTweening(player)){
+          if(dashTween.progress > 0.1){
+            player.anims.play('dash',true);
+            animChanged = true;
+          }
+        }
 
 	if(canDash && cursors.space.isDown && !this.tweens.isTweening(player)){
-	  animationSwitched = false;
 	  if(canDash && cursors.right.isDown){
-	    if(game.config.width - player.body.x > 300){
-	      this.tweens.add({
+	    if((game.config.width - player.getTopRight().x) >= 250){
+	      dashTween = this.tweens.add({
 	        targets: [player],
 		y: player.body.y,
 		x: player.body.x + 250,
-		duration: 400,
+		duration: 250,
 		callbackScope:this
 	      });
 	      anim = player.anims.play('flap');
 	      canDash = false;
+              animChanged = false;
 	    }
+            else{
+              var diffDist = game.config.width - player.body.x;
+              dashTween = this.tweens.add({
+                targets: [player],
+                y: player.body.y,
+                x: player.body.x + diffDist,
+                duration: diffDist,
+                callbackScope:this,
+              }); 
+            }
+              anim = player.anims.play('flap');
+              canDash = false;
+              animChanged = false;
+
 	  }
 	  else if(canDash && cursors.left.isDown){
-	    if(game.config.width - player.body.x < 500){
-	      this.tweens.add({
+	    if((player.getTopLeft().x) >= 250){
+	      dashTween = this.tweens.add({
 	        targets: [player],
 	        y: player.body.y,
 		x: player.body.x - 250,
-		duration: 400,
+		duration: 250,
 		callbackScope: this
 	      });
 	      anim = player.anims.play('flap');
-	        canDash = false;
-	      }
+	      canDash = false;
+              animChanged = false;
+	    }
+            else{
+              var diffDist = player.body.x;
+              dashTween = this.tweens.add({
+                targets: [player],
+                y: player.body.y,
+                x: player.body.x - diffDist,
+                duration: diffDist,
+                callbackScope:this,
+              });
+            }
+              anim = player.anims.play('flap');
+              canDash = false;
+              animChanged = false;            
 	  }
 	  else if(canDash && cursors.up.isDown){
-	    this.tweens.add({
+	    dashTween = this.tweens.add({
 	      targets: [player],
 	      x: player.body.x,
 	      y: player.body.y -250,
-	      duration: 400,
+	      duration: 250,
 	      callbackScope: this
 	    });
 	    canDash = false;
 	    anim = player.anims.play('flap');
+            animChanged = false;
 	  }
 	  else if(canDash && cursors.down.isDown){
-	    if(game.config.height - player.body.y > 350){
-	      this.tweens.add({
+	    if((game.config.height - player.getBottomLeft().y) >= 350){
+	       dashTween = this.tweens.add({
 	        targets: [player],
 		x: player.body.x,
 		y: player.body.y + 250,
-		duration: 400,
+		duration: 250,
 		callbackScope: this
 	      });
 	      canDash = false;
 	      anim = player.anims.play('flap');
+              animChanged = false;
 	    }
+            else{
+              var diffDist = (game.config.height) - (player.body.y + 100);
+              dashTween = this.tweens.add({
+                targets: [player],
+                y: player.body.y + diffDist,
+                x: player.body.x,
+                duration: diffDist,
+                callbackScope:this,
+              });
+            }
+              anim = player.anims.play('flap');
+              canDash = false;
+              animChanged = false;
 	  }	
 	  if(!canDash){
 	    dashTimer = new Date();
 	  }
         }
+      
 	  if(!featherFading&&!canDash && !this.tweens.isTweening(feather)){
             feather.alpha = 0;
 	    featherFading = true;
