@@ -352,7 +352,8 @@ var biteTwo;
         currentTime = new Date();        
         
 	function collectStar(player,breadCrumb){
-          if(!this.tweens.isTweening(player) && !player.isDead){
+         //if(!this.tweens.isTweening(player) && !player.isDead){ 
+          if(!player.isDead){
             breadCrumb.disableBody(true,true);
             score += breadCrumbWorth;
             breadCrumbWorth += 10;
