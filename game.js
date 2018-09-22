@@ -311,6 +311,9 @@ var biteTwo;
           biteTwo = this.sound.add('bite_two');
           foodBounce = this.sound.add('food_bounce');
           bombBounce = this.sound.add('bomb_bounce');
+          score = 0;
+          breadCrumbWorth = 10;
+          spawnSpeed = 5;
 	}
 
       function update(){
