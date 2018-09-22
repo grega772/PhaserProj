@@ -91,6 +91,7 @@ var biteTwo;
 
         function playSadMusic(){
           var sadMusic = jQuery('#mad_world_audio')[0];
+          mad_world_music_finished = false;
           sadMusic.currentTime = 0.3;
           sadMusic.volume = 1;
           jQuery("audio").on("ended", function(){mad_world_music_finished = true;});
